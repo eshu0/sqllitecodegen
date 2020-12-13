@@ -5,8 +5,8 @@ import (
 	"fmt"
 
   	// these are from the package {{$repo := index . 0 }}
-	ds "{{$repo.TargetRepoHost}}/{{$repo.RepoName}}/pkg/datastore"
-	models "{{$repo.TargetRepoHost}}/{{$repo.RepoName}}/pkg/models"
+	"{{$repo.TargetRepoHost}}/{{$repo.RepoName}}/pkg/datastore"
+	"{{$repo.TargetRepoHost}}/{{$repo.RepoName}}/pkg/models"
 )
 
 func main() {
@@ -15,7 +15,7 @@ func main() {
 
 	flag.Parse()
 
-	fds := ds.CreateDataStorage(*dbname)
+	fds := datastore.CreateDataStorage(*dbname)
 
 	{{range .}}
 	{{.StorageHandlerName}} := fds.Get{{.StorageHandlerName}}()

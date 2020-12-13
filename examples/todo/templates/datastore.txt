@@ -1,10 +1,10 @@
-package pgudatastore
+package datastore
 
 import (
 	SQLL "github.com/eshu0/persist/pkg/sqllite"
 
 	// these are from the package
-	hndlr "{{.TargetRepoHost}}/{{.RepoName}}/pkg/handlers"
+	"{{.TargetRepoHost}}/{{.RepoName}}/pkg/handlers"
 )
 
 type {{.Database.FilenameTrimmed}}Datastore struct {
@@ -23,7 +23,7 @@ func CreateDataStorage(filename string) *{{.Database.FilenameTrimmed}}Datastore 
 	// tests the example
 	ds.SetStorageHander("Generic",SQLL.NewSQLLiteTableHandler(ds)) 
 	{{range .Templates}}
-	ds.SetStorageHander("{{.Table.Name}}",hndlr.New{{.StorageHandlerName}}(ds))
+	ds.SetStorageHander("{{.Table.Name}}",handlers.New{{.StorageHandlerName}}(ds))
 	{{end}}
 
 
@@ -35,11 +35,11 @@ func CreateDataStorage(filename string) *{{.Database.FilenameTrimmed}}Datastore 
 }
 
 {{range .Templates}}
-func (fds *{{.Database.FilenameTrimmed}}Datastore) Get{{.StorageHandlerName}}() *hndlr.{{.StorageHandlerName}} {
+func (fds *{{.Database.FilenameTrimmed}}Datastore) Get{{.StorageHandlerName}}() *handlers.{{.StorageHandlerName}} {
 
 	data, ok := fds.Datastore.GetStorageHandler("{{.Table.Name}}")
 	if ok {
-	  res := data.(*hndlr.{{.StorageHandlerName}})
+	  res := data.(*handlers.{{.StorageHandlerName}})
 	  return res
 	}
 	return nil

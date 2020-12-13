@@ -1,4 +1,4 @@
-package pgucontrollers
+package controllers
 
 import (
 	// external
@@ -8,18 +8,18 @@ import (
 	"github.com/eshu0/persist/pkg/sqllite"
 
 	// these are from the package
-	hndlr "{{.TargetRepoHost}}/{{.RepoName}}/pkg/handlers"
-	models "{{.TargetRepoHost}}/{{.RepoName}}/pkg/models"
+	"{{.TargetRepoHost}}/{{.RepoName}}/pkg/handlers"
+	"{{.TargetRepoHost}}/{{.RepoName}}/pkg/models"
 )
 
 // Controller
 
 type {{.StorageControllerName}} struct {
-	{{.StorageHandlerName}} *hndlr.{{.StorageHandlerName}} // Storage handler
+	{{.StorageHandlerName}} *handlers.{{.StorageHandlerName}} // Storage handler
 	Server *RSServer.RServer
 }
 
-func New{{.StorageControllerName}}(handler *hndlr.{{.StorageHandlerName}}, Server *RSServer.RServer) *{{.StorageControllerName}} {
+func New{{.StorageControllerName}}(handler *handlers.{{.StorageHandlerName}}, Server *RSServer.RServer) *{{.StorageControllerName}} {
 	ds := {{.StorageControllerName}}{}
 	ds.{{.StorageHandlerName}} = handler
 	ds.Server = Server

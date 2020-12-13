@@ -8,9 +8,9 @@ import (
 	RSServer "github.com/eshu0/RESTServer/pkg/server"
 
   	// these are from the package {{$repo := index . 0 }}
-	ds "{{$repo.TargetRepoHost}}/{{$repo.RepoName}}/pkg/datastore"
-	models "{{$repo.TargetRepoHost}}/{{$repo.RepoName}}/pkg/models"
-	controllers "{{$repo.TargetRepoHost}}/{{$repo.RepoName}}/pkg/REST/controllers"		
+	"{{$repo.TargetRepoHost}}/{{$repo.RepoName}}/pkg/datastore"
+	"{{$repo.TargetRepoHost}}/{{$repo.RepoName}}/pkg/models"
+	"{{$repo.TargetRepoHost}}/{{$repo.RepoName}}/pkg/REST/controllers"		
 )
 
 func main() {
@@ -38,7 +38,7 @@ func main() {
 	RESTCommands.AddDefaults(server)
 	RESTCommands.SetDefaultFunctionalMap(server)
 
-	fds := ds.CreateDataStorage(*dbname)
+	fds := datastore.CreateDataStorage(*dbname)
 
 	{{range .}}
 

@@ -102,17 +102,23 @@ func Parse(dbname string, odir string, tdir string, slog sli.ISimpleLogger) {
 	pkgdir := outputdir + "/pkg"
 	fmt.Println("Package directory is: " + outputdir)
 
+	// packages
 	datastoredir := pkgdir + "/datastore/"
 	handlerdir := pkgdir + "/handlers/"
 	modelsdir := pkgdir + "/models/"
-	appdir := outputdir + "/testapp/"
-	restdir := outputdir + "/REST/"
 	pkgrestdir := pkgdir + "/REST/"
 	controllersdir := pkgrestdir + "controllers/"
+
+	// apps
+	cmddir := outputdir + "/cmd/"
+	appdir := cmddir + "testapp/"
+	restdir := cmddir + "restserver/"
 
 	CheckCreatePath(slog, dbname, true)
 	CheckCreatePath(slog, odir, false)
 	CheckCreatePath(slog, pkgdir, false)
+	CheckCreatePath(slog, cmddir, false)
+
 	CheckCreatePath(slog, pkgrestdir, false)
 	CheckCreatePath(slog, outputdir, false)
 	CheckCreatePath(slog, datastoredir, false)
@@ -128,12 +134,13 @@ func Parse(dbname string, odir string, tdir string, slog sli.ISimpleLogger) {
 
 	dbstruct := fds.GetDatabaseStructure()
 
-	CodeTemplate := CreateTemplate(tdir+"CodeTemplate.txt", "code")
-	DataTemplate := CreateTemplate(tdir+"DataTemplate.txt", "data")
-	DLTemplate := CreateTemplate(tdir+"DLTemplate.txt", "dl")
-	MainTemplate := CreateTemplate(tdir+"MainTemplate.txt", "main")
-	ControllersTemplate := CreateTemplate(tdir+"Controllers.txt", "control")
-	RESTServerTemplate := CreateTemplate(tdir+"RESTServer.txt", "control")
+	CodeTemplate := CreateTemplate(tdir+"handlers.txt", "code")
+	DataTemplate := CreateTemplate(tdir+"models.txt", "data")
+	DLTemplate := CreateTemplate(tdir+"datastore.txt", "dl")
+	ControllersTemplate := CreateTemplate(tdir+"controllers.txt", "control")
+
+	MainTemplate := CreateTemplate(tdir+"apps/testapp.txt", "main")
+	RESTServerTemplate := CreateTemplate(tdir+"apps/restserver.txt", "control")
 
 	rpfolder := strings.Replace(filepath.Base(dbstruct.Database.Filename), filepath.Ext(dbstruct.Database.Filename), "", -1)
 	reponame := strings.ToLower(rpfolder)
