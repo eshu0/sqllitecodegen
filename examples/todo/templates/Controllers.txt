@@ -3,13 +3,13 @@ package pgucontrollers
 import (
 	// external
 	Request "github.com/eshu0/RESTServer/pkg/request"
-	per "github.com/eshu0/persist/pkg/interfaces"
 	RSServer "github.com/eshu0/RESTServer/pkg/server"
+	per "github.com/eshu0/persist/pkg/interfaces"
 	"github.com/eshu0/persist/pkg/sqllite"
 
 	// these are from the package
-	hndlr "{{.TargetRepoHost}}/{{.RepoName}}/pkg/Handlers"
-	models "{{.TargetRepoHost}}/{{.RepoName}}/pkg/Models"
+	hndlr "{{.TargetRepoHost}}/{{.RepoName}}/pkg/handlers"
+	models "{{.TargetRepoHost}}/{{.RepoName}}/pkg/models"
 )
 
 // Controller
@@ -30,19 +30,19 @@ func (controller *{{.StorageControllerName}}) HandleRequest(request Request.Serv
 	data := request.Payload.(models.{{.StructDetails.Name}})
 	
 	if request.Request.Method == "POST" {
-		controller.Server.Log.LogDebug("HandleRequest", "Calling to insert a new {{.StructDetails.Name}}")
+		controller.Server.LogDebug("HandleRequest", "Calling to insert a new {{.StructDetails.Name}}")
 		result := controller.{{.StorageHandlerName}}.Create(data)
 		return result
 
 	} else if request.Request.Method == "PUT" { 
 	
-		controller.Server.Log.LogDebug("HandleRequest", "Calling to update {{.StructDetails.Name}}")
+		controller.Server.LogDebug("HandleRequest", "Calling to update {{.StructDetails.Name}}")
 		result := controller.{{.StorageHandlerName}}.Update(data)
 		return result
 
 	} else if request.Request.Method == "DELETE" { 
 	
-		controller.Server.Log.LogDebug("HandleRequest", "Calling to update the (DELETE) {{.StructDetails.Name}}")
+		controller.Server.LogDebug("HandleRequest", "Calling to update the (DELETE) {{.StructDetails.Name}}")
 		result := controller.{{.StorageHandlerName}}.Update(data)
 		return result
 
@@ -50,20 +50,20 @@ func (controller *{{.StorageControllerName}}) HandleRequest(request Request.Serv
 		
 		Id := controller.Server.RequestHelper.GetRequestId(request.Request,"{{.StructDetails.Id.Name}}")
 		if Id != nil {
-			controller.Server.Log.LogDebugf("HandleRequest", "Id was not nil and have the following to lookup %d", *Id)
+			controller.Server.LogDebugf("HandleRequest", "Id was not nil and have the following to lookup %d", *Id)
 			result := controller.{{.StorageHandlerName}}.FindById(int64(*Id))
 			return result
 		} else {
-			controller.Server.Log.LogError("HandleRequest", "{{.StructDetails.Id.Name}} was nil")
+			controller.Server.LogError("HandleRequest", "{{.StructDetails.Id.Name}} was nil")
 		}
 	}
 	
-	controller.Server.Log.LogError("HandleRequest", "Failed returning empty SQLLiteResult")
+	controller.Server.LogError("HandleRequest", "Failed returning empty SQLLiteResult")
 	return SQLL.NewEmptyFailedSQLLiteQueryResult()
 }
 
 func (controller *{{.StorageControllerName}}) HandleReadAllRequest(request Request.ServerRequest) per.IQueryResult { 
-	controller.Server.Log.LogDebug("HandleRequest", "Calling to read all {{.StructDetails.Name}}")
+	controller.Server.LogDebug("HandleRequest", "Calling to read all {{.StructDetails.Name}}")
 	result := controller.{{.StorageHandlerName}}.ReadAll()
 	return result
 }

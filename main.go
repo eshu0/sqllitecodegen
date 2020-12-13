@@ -102,16 +102,18 @@ func Parse(dbname string, odir string, tdir string, slog sli.ISimpleLogger) {
 	pkgdir := outputdir + "/pkg"
 	fmt.Println("Package directory is: " + outputdir)
 
-	datastoredir := pkgdir + "/Datastore/"
-	handlerdir := pkgdir + "/Handlers/"
-	modelsdir := pkgdir + "/Models/"
-	appdir := outputdir + "/TestApp/"
+	datastoredir := pkgdir + "/datastore/"
+	handlerdir := pkgdir + "/handlers/"
+	modelsdir := pkgdir + "/models/"
+	appdir := outputdir + "/testapp/"
 	restdir := outputdir + "/REST/"
-	controllersdir := restdir + "Controllers/"
+	pkgrestdir := pkgdir + "/REST/"
+	controllersdir := pkgrestdir + "controllers/"
 
 	CheckCreatePath(slog, dbname, true)
 	CheckCreatePath(slog, odir, false)
 	CheckCreatePath(slog, pkgdir, false)
+	CheckCreatePath(slog, pkgrestdir, false)
 	CheckCreatePath(slog, outputdir, false)
 	CheckCreatePath(slog, datastoredir, false)
 	CheckCreatePath(slog, handlerdir, false)
@@ -133,18 +135,28 @@ func Parse(dbname string, odir string, tdir string, slog sli.ISimpleLogger) {
 	ControllersTemplate := CreateTemplate(tdir+"Controllers.txt", "control")
 	RESTServerTemplate := CreateTemplate(tdir+"RESTServer.txt", "control")
 
+	rpfolder := strings.Replace(filepath.Base(dbstruct.Database.Filename), filepath.Ext(dbstruct.Database.Filename), "", -1)
+	reponame := strings.ToLower(rpfolder)
+	fullreponame := "eshu0/" + reponame
+	targetrepohost := "github.com"
+
 	// Execute the template for each recipient.
-	ctemplates := GenerateFile(dbstruct, slog)
+	ctemplates := GenerateFile(dbstruct, slog, false, targetrepohost, fullreponame)
 
 	for _, cs := range ctemplates {
-		CreateAndExecute(slog, handlerdir+cs.GetHandlersName()+".go", CodeTemplate, cs)
-		CreateAndExecute(slog, controllersdir+cs.GetHandlersName()+".go", ControllersTemplate, cs)
-		CreateAndExecute(slog, modelsdir+cs.GetDataName()+".go", DataTemplate, cs)
+		CreateAndExecute(slog, handlerdir+cs.Filename+".go", CodeTemplate, cs)
+		CreateAndExecute(slog, controllersdir+cs.Filename+".go", ControllersTemplate, cs)
 	}
 
-	dl := Datats{Database: ctemplates[0].Database, Templates: ctemplates, TargetRepoHost: "github.com", RepoName: "eshu0/" + outputdir}
+	ctemplates = GenerateFile(dbstruct, slog, true, targetrepohost, fullreponame)
 
-	CreateAndExecute(slog, datastoredir+dl.Database.FilenameTrimmed+".go", DLTemplate, dl)
+	for _, cs := range ctemplates {
+		CreateAndExecute(slog, modelsdir+cs.Filename+".go", DataTemplate, cs)
+	}
+
+	dl := Datats{Database: ctemplates[0].Database, Templates: ctemplates, TargetRepoHost: targetrepohost, RepoName: fullreponame}
+
+	CreateAndExecute(slog, strings.ToLower(datastoredir+dl.Database.FilenameTrimmed)+".go", DLTemplate, dl)
 	CreateAndExecute(slog, appdir+"main.go", MainTemplate, ctemplates)
 	CreateAndExecute(slog, restdir+"main.go", RESTServerTemplate, ctemplates)
 }

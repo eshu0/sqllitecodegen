@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"path/filepath"
 	"strings"
 
 	anl "github.com/eshu0/pangu/pkg/analysers"
@@ -39,14 +38,17 @@ type CodeTemplate struct {
 	Database              *anl.Database
 	TargetRepoHost        string
 	RepoName              string
+	Filename              string
 }
 
-func (cs *CodeTemplate) GetHandlersName() string {
-	return strings.Title(cs.Table.Name)
+func (cs *CodeTemplate) getHandlersName() string {
+	return strings.ToLower(cs.Table.Name)
 }
 
-func (cs *CodeTemplate) GetDataName() string {
-	name := strings.Title(cs.Table.Name)
+func (cs *CodeTemplate) getDataName() string {
+	name := strings.ToLower(cs.Table.Name)
+
+	// crude way to take items and make it singular
 	if last := len(name) - 1; last >= 0 && name[last] == 's' {
 		name = name[:last]
 	}
@@ -54,18 +56,20 @@ func (cs *CodeTemplate) GetDataName() string {
 	return name
 }
 
-func GenerateFile(dbstruct *anl.DatabaseStructure, slog sli.ISimpleLogger) []*CodeTemplate {
+func GenerateFile(dbstruct *anl.DatabaseStructure, slog sli.ISimpleLogger, usetablename bool, repohost string, reponame string) []*CodeTemplate {
 
 	var temps []*CodeTemplate
 
-	dbfolder := strings.Replace(filepath.Base(dbstruct.Database.Filename), filepath.Ext(dbstruct.Database.Filename), "", -1)
-	reponame := strings.ToLower(dbfolder)
-
 	for _, tbl := range dbstruct.Tables {
 
-		cs := CodeTemplate{PackageName: "pguhandlers", Table: tbl, StorageHandlerName: strings.Title(tbl.Name + "Handler"), StorageControllerName: strings.Title(tbl.Name + "Controller"), Database: dbstruct.Database, TargetRepoHost: "github.com", RepoName: "eshu0/" + reponame}
+		cs := CodeTemplate{PackageName: "pguhandlers", Table: tbl, StorageHandlerName: strings.Title(tbl.Name + "Handler"), StorageControllerName: strings.Title(tbl.Name + "Controller"), Database: dbstruct.Database, TargetRepoHost: repohost, RepoName: reponame}
 		cs.StructDetails = tbl.CreateStructDetails()
 		consts, idconst := tbl.CreateConstants()
+		if !usetablename {
+			cs.Filename = cs.getHandlersName()
+		} else {
+			cs.Filename = cs.getDataName()
+		}
 
 		cs.Constants = consts
 		cs.IdConstant = idconst
