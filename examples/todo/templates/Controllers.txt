@@ -1,13 +1,15 @@
 package pgucontrollers
 
 import (
+	// external
 	Request "github.com/eshu0/RESTServer/pkg/request"
-	hndlr "github.com/eshu0/Pangu/examples/Autogen/Todos/Handlers"
-	models "github.com/eshu0/Pangu/examples/Autogen/Todos/Models"
 	per "github.com/eshu0/persist/pkg/interfaces"
 	RSServer "github.com/eshu0/RESTServer/pkg/server"
 	"github.com/eshu0/persist/pkg/sqllite"
 
+	// these are from the package
+	hndlr "{{.TargetRepoHost}}/{{.RepoName}}/pkg/Handlers"
+	models "{{.TargetRepoHost}}/{{.RepoName}}/pkg/Models"
 )
 
 // Controller

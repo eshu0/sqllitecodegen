@@ -2,7 +2,9 @@ package pgudatastore
 
 import (
 	SQLL "github.com/eshu0/persist/pkg/sqllite"
-	hndlr "github.com/eshu0/Pangu/examples/Autogen/Todos/Handlers"
+	
+	// these are from the package
+	hndlr "{{.TargetRepoHost}}/{{.RepoName}}/pkg/Handlers"
 )
 
 type {{.Database.FilenameTrimmed}}Datastore struct {

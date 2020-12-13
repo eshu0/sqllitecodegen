@@ -4,8 +4,9 @@ import (
 	"flag"
 	"fmt"
 
-	ds "github.com/eshu0/Pangu/examples/Autogen/Todos/DataStore"
-	data "github.com/eshu0/Pangu/examples/Autogen/Todos/Models"
+  	// these are from the package
+	ds "{{.TargetRepoHost}}/{{.RepoName}}/pkg/DataStore"
+	data "{{.TargetRepoHost}}/{{.RepoName}}/pkg/Models"
 )
 
 func main() {

@@ -34,6 +34,8 @@ type CodeTemplate struct {
 	CreateTableSQL        string
 	ScanRow               string
 	Database              *anl.Database
+	TargetRepoHost        string
+	RepoName              string
 }
 
 func (cs *CodeTemplate) GetHandlersName() string {
@@ -55,7 +57,7 @@ func GenerateFile(dbstruct *anl.DatabaseStructure, slog sli.ISimpleLogger) []*Co
 
 	for _, tbl := range dbstruct.Tables {
 
-		cs := CodeTemplate{PackageName: "pguhandlers", Table: tbl, StorageHandlerName: strings.Title(tbl.Name + "Handler"), StorageControllerName: strings.Title(tbl.Name + "Controller"), Database: dbstruct.Database}
+		cs := CodeTemplate{PackageName: "pguhandlers", Table: tbl, StorageHandlerName: strings.Title(tbl.Name + "Handler"), StorageControllerName: strings.Title(tbl.Name + "Controller"), Database: dbstruct.Database, TargetRepoHost: "github.com", RepoName: "esh0/" + dbstruct.Database.Name}
 		cs.StructDetails = tbl.CreateStructDetails()
 		consts, idconst := tbl.CreateConstants()
 
