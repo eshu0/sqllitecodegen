@@ -6,7 +6,7 @@ import (
 	RESTCommands "github.com/eshu0/RESTServer/pkg/commands"
 	RSConfig "github.com/eshu0/RESTServer/pkg/config"
 	RSServer "github.com/eshu0/RESTServer/pkg/server"
-	
+
   	// these are from the package {{$repo := index . 0 }}
 	ds "{{$repo.TargetRepoHost}}/{{$repo.RepoName}}/pkg/datastore"
 	models "{{$repo.TargetRepoHost}}/{{$repo.RepoName}}/pkg/models"
@@ -43,14 +43,14 @@ func main() {
 	{{range .}}
 
 	{{.StorageHandlerName}} := fds.Get{{.StorageHandlerName}}()
-	{{.StorageControllerName}} := Controllers.New{{.StorageControllerName}}({{.StorageHandlerName}}, server)
+	{{.StorageControllerName}} := controllers.New{{.StorageControllerName}}({{.StorageHandlerName}}, server)
 	server.Register("{{.StorageControllerName}}",{{.StorageControllerName}})
 
 	{{end}}
 
 	{{range .}}
 
-	new{{.StructDetails.Name}}  := data.{{.StructDetails.Name}}{}
+	new{{.StructDetails.Name}}  := models.{{.StructDetails.Name}}{}
 	
 	server.AddJSONFunctionHandler("/{{.StructDetails.Name}}/{{"{"}}{{.StructDetails.Id.Name}}{{"}"}}/","HandleRequest","GET","{{.StorageControllerName}}",new{{.StructDetails.Name}})
 	server.AddJSONFunctionHandler("/{{.StructDetails.Name}}/","HandleRequest","","{{.StorageControllerName}}",new{{.StructDetails.Name}})

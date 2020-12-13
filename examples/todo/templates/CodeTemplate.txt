@@ -73,12 +73,12 @@ func (handler *{{.StorageHandlerName}}) Wipe() SQLL.SQLLiteQueryResult {
 
 // This adds {{.StructDetails.Name}} to the database 
 func (handler *{{.StorageHandlerName}}) Create(Data per.IDataItem) SQLL.SQLLiteQueryResult {
-	data := Data.(data.{{.StructDetails.Name}})
+	data := Data.(models.{{.StructDetails.Name}})
 	return handler.ConvertResult(handler.Executor.ExecuteInsertQuery("INSERT INTO " + {{.TableConstant.Name}} + " ( "{{.InsertDBColumns}}" ) VALUES ({{.ParametersColumns}})", {{.InsertGo}}))
 }
 
 func (handler *{{.StorageHandlerName}}) Update(Data per.IDataItem) SQLL.SQLLiteQueryResult  {
-	data := Data.(data.{{.StructDetails.Name}})
+	data := Data.(models.{{.StructDetails.Name}})
 	return handler.ConvertResult(handler.Executor.ExecuteQuery("UPDATE " + {{.TableConstant.Name}} + " SET "{{.UpdateDBColumns}}"  WHERE [" + {{.IdConstant.Name}} + "] = ?",{{.UpdateGo}}))
 }
 
@@ -117,7 +117,7 @@ func (handler *{{.StorageHandlerName}}) ParseRows(rows *sql.Rows) per.IQueryResu
 		if err != nil {
 			handler.Parent.LogErrorEf("ParseRows","Row Scan errr: %s ",err)
 		} else {
-			res := data.{{.StructDetails.Name}}{}
+			res := models.{{.StructDetails.Name}}{}
 			{{range .StructDetails.Properties}}
 				if {{.Name}} != nil {
 					res.{{.Name}} = *{{.Name}}

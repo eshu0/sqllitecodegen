@@ -25,7 +25,7 @@ func main() {
 	fmt.Println("Create")
 	fmt.Println("----")
 	{{range .}}
-	new{{.StructDetails.Name}}  := data.{{.StructDetails.Name}}{}
+	new{{.StructDetails.Name}}  := models.{{.StructDetails.Name}}{}
 	fmt.Println(new{{.StructDetails.Name}})
 
 	ins{{.StructDetails.Name}} := {{.StorageHandlerName}}.Create(new{{.StructDetails.Name}})
@@ -48,7 +48,7 @@ func main() {
 			fmt.Println("Update")
 			fmt.Println("----")
 			{{$structname := .StructDetails.Name }}
-			res :=data.{{.StructDetails.Name}}{}
+			res :=models.{{.StructDetails.Name}}{}
 			res = res.ConvertFromIDataItem(res1)
 			fmt.Println(res)
 			{{range .StructDetails.UpdateProperties}}

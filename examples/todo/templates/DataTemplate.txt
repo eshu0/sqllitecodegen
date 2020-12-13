@@ -1,4 +1,4 @@
-package pgumodel
+package models
 
 import (
 	"fmt"
