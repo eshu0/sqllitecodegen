@@ -1,1 +1,1 @@
-../../sqllitecodegen --db ./todos.db --tdir ./templates/  --out ./autogen/ 
+../../sqllitecodegen --db ./todos.db --tdir ./templates/  --out ../../../ 
