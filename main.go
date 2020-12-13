@@ -17,7 +17,8 @@ import (
 func main() {
 
 	dbname := flag.String("db", "", "Database defaults to searching the current working directoyr for .db files")
-	outdir := flag.String("out", "", "output is ../Autogen/<Database>")
+	outdir := flag.String("out", "", "output is ./Autogen/<Database>")
+	tdir := flag.String("tdir", "", "Template directory is ./template/")
 	flag.Parse()
 
 	slog := sl.NewApplicationLogger()
@@ -25,10 +26,15 @@ func main() {
 	// lets open a flie log using the session
 	slog.OpenAllChannels()
 
-	outputdir := "../Autogen/"
+	outputdir := "./Autogen/"
+	templatedir := "./templates"
 
 	if outdir != nil && *outdir != "" {
 		outputdir = *outdir
+	}
+
+	if tdir != nil && *tdir != "" {
+		templatedir = *tdir
 	}
 
 	if dbname == nil || (dbname != nil && *dbname == "") {
@@ -39,14 +45,14 @@ func main() {
 			}
 			if !info.IsDir() && filepath.Ext(path) == ".db" {
 				fmt.Printf("Parsing database: %+v \n", info.Name())
-				Parse(path, outputdir, slog)
+				Parse(path, outputdir, templatedir, slog)
 				return nil
 			}
 			fmt.Printf("visited file or dir: %q\n", path)
 			return nil
 		})
 	} else {
-		Parse(*dbname, outputdir, slog)
+		Parse(*dbname, outputdir, templatedir, slog)
 	}
 }
 
@@ -79,7 +85,11 @@ func CreateAndExecute(slog sli.ISimpleLogger, filename string, templ *template.T
 	file.Close()
 }
 
-func Parse(dbname string, odir string, slog sli.ISimpleLogger) {
+func Parse(dbname string, odir string, tdir string, slog sli.ISimpleLogger) {
+
+	if tdir == "" {
+		tdir = "./templates/"
+	}
 
 	dbfolder := strings.Replace(filepath.Base(dbname), filepath.Ext(dbname), "", -1)
 
@@ -109,12 +119,12 @@ func Parse(dbname string, odir string, slog sli.ISimpleLogger) {
 
 	dbstruct := fds.GetDatabaseStructure()
 
-	CodeTemplate := CreateTemplate("./Templates/CodeTemplate.txt", "code")
-	DataTemplate := CreateTemplate("./Templates/DataTemplate.txt", "data")
-	DLTemplate := CreateTemplate("./Templates/DLTemplate.txt", "dl")
-	MainTemplate := CreateTemplate("./Templates/MainTemplate.txt", "main")
-	ControllersTemplate := CreateTemplate("./Templates/Controllers.txt", "control")
-	RESTServerTemplate := CreateTemplate("./Templates/RESTServer.txt", "control")
+	CodeTemplate := CreateTemplate(tdir+"CodeTemplate.txt", "code")
+	DataTemplate := CreateTemplate(tdir+"DataTemplate.txt", "data")
+	DLTemplate := CreateTemplate(tdir+"DLTemplate.txt", "dl")
+	MainTemplate := CreateTemplate(tdir+"MainTemplate.txt", "main")
+	ControllersTemplate := CreateTemplate(tdir+"Controllers.txt", "control")
+	RESTServerTemplate := CreateTemplate(tdir+"RESTServer.txt", "control")
 
 	// Execute the template for each recipient.
 	ctemplates := GenerateFile(dbstruct, slog)
