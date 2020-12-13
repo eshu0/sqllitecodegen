@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	anl "github.com/eshu0/pangu/pkg/analysers"
@@ -11,8 +12,10 @@ import (
 
 // solution to having data changes
 type Datats struct {
-	Templates []*CodeTemplate
-	Database  *anl.Database
+	Templates      []*CodeTemplate
+	Database       *anl.Database
+	TargetRepoHost string
+	RepoName       string
 }
 
 // Confsing name -> should rename
@@ -55,9 +58,12 @@ func GenerateFile(dbstruct *anl.DatabaseStructure, slog sli.ISimpleLogger) []*Co
 
 	var temps []*CodeTemplate
 
+	dbfolder := strings.Replace(filepath.Base(dbstruct.Database.Filename), filepath.Ext(dbstruct.Database.Filename), "", -1)
+	reponame := strings.ToLower(dbfolder)
+
 	for _, tbl := range dbstruct.Tables {
 
-		cs := CodeTemplate{PackageName: "pguhandlers", Table: tbl, StorageHandlerName: strings.Title(tbl.Name + "Handler"), StorageControllerName: strings.Title(tbl.Name + "Controller"), Database: dbstruct.Database, TargetRepoHost: "github.com", RepoName: "esh0/" + dbstruct.Database.Name}
+		cs := CodeTemplate{PackageName: "pguhandlers", Table: tbl, StorageHandlerName: strings.Title(tbl.Name + "Handler"), StorageControllerName: strings.Title(tbl.Name + "Controller"), Database: dbstruct.Database, TargetRepoHost: "github.com", RepoName: "esh0/" + reponame}
 		cs.StructDetails = tbl.CreateStructDetails()
 		consts, idconst := tbl.CreateConstants()
 

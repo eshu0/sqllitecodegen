@@ -3,13 +3,18 @@ package main
 import (
 	"flag"
 
-	ds "github.com/eshu0/Pangu/examples/Autogen/Todos/DataStore"
-	data "github.com/eshu0/Pangu/examples/Autogen/Todos/Models"	
-	Controllers "github.com/eshu0/Pangu/examples/Autogen/Todos/REST/Controllers"	
+
 	
 	RESTCommands "github.com/eshu0/RESTServer/pkg/commands"
 	RSConfig "github.com/eshu0/RESTServer/pkg/config"
 	RSServer "github.com/eshu0/RESTServer/pkg/server"
+
+	{{$repo := index . 0 }}
+
+  	// these are from the package
+	ds "{{$repo.TargetRepoHost}}/{{$repo.RepoName}}/pkg/DataStore"
+	data "{{$repo.TargetRepoHost}}/{{$repo.RepoName}}/pkg/Models"
+	Controllers "{{$repo.TargetRepoHost}}/{{$repo.RepoName}}/REST/Controllers"		
 )
 
 func main() {

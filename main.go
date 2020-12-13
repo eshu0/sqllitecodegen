@@ -73,13 +73,16 @@ func CheckCreatePath(slog sli.ISimpleLogger, path string, panicif bool) {
 func CreateAndExecute(slog sli.ISimpleLogger, filename string, templ *template.Template, data interface{}) {
 	file, err := os.Create(filename)
 	if err != nil {
-		slog.LogError("CreateAndExecute", fmt.Sprintf("Cannot create file%s", err.Error()))
+		slog.LogErrorEf("CreateAndExecute", "Cannot create file %s", err)
 		return
 	}
 
+	fmt.Printf("Processing template: %s \n", filename)
+
 	err = templ.Execute(file, data)
 	if err != nil {
-		fmt.Println("executing template:", err)
+		slog.LogErrorEf("CreateAndExecute", "Execute Template failed: %s", err)
+		fmt.Println("executing template: ", err)
 	}
 
 	file.Close()
@@ -93,7 +96,7 @@ func Parse(dbname string, odir string, tdir string, slog sli.ISimpleLogger) {
 
 	dbfolder := strings.Replace(filepath.Base(dbname), filepath.Ext(dbname), "", -1)
 
-	outputdir := odir + strings.Title(dbfolder)
+	outputdir := odir + strings.ToLower(dbfolder) //strings.Title(dbfolder)
 	fmt.Println("Outputting to: " + outputdir)
 
 	pkgdir := outputdir + "/pkg"
@@ -139,7 +142,7 @@ func Parse(dbname string, odir string, tdir string, slog sli.ISimpleLogger) {
 		CreateAndExecute(slog, modelsdir+cs.GetDataName()+".go", DataTemplate, cs)
 	}
 
-	dl := Datats{Database: ctemplates[0].Database, Templates: ctemplates}
+	dl := Datats{Database: ctemplates[0].Database, Templates: ctemplates, TargetRepoHost: "github.com", RepoName: "esh0/" + outputdir}
 
 	CreateAndExecute(slog, datastoredir+dl.Database.FilenameTrimmed+".go", DLTemplate, dl)
 	CreateAndExecute(slog, appdir+"main.go", MainTemplate, ctemplates)

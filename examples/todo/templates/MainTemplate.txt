@@ -4,9 +4,11 @@ import (
 	"flag"
 	"fmt"
 
+	{{$repo := index . 0 }}
+
   	// these are from the package
-	ds "{{.TargetRepoHost}}/{{.RepoName}}/pkg/DataStore"
-	data "{{.TargetRepoHost}}/{{.RepoName}}/pkg/Models"
+	ds "{{$repo.TargetRepoHost}}/{{$repo.RepoName}}/pkg/DataStore"
+	data "{{$repo.TargetRepoHost}}/{{$repo.RepoName}}/pkg/Models"
 )
 
 func main() {
