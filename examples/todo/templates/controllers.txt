@@ -1,0 +1,71 @@
+package controllers
+
+import (
+	// external
+	Request "github.com/eshu0/RESTServer/pkg/request"
+	RSServer "github.com/eshu0/RESTServer/pkg/server"
+	per "github.com/eshu0/persist/pkg/interfaces"
+	"github.com/eshu0/persist/pkg/sqllite"
+
+	// these are from the package
+	"{{.TargetRepoHost}}/{{.RepoName}}/pkg/handlers"
+	"{{.TargetRepoHost}}/{{.RepoName}}/pkg/models"
+)
+
+// Controller
+
+type {{.StorageControllerName}} struct {
+	{{.StorageHandlerName}} *handlers.{{.StorageHandlerName}} // Storage handler
+	Server *RSServer.RServer
+}
+
+func New{{.StorageControllerName}}(handler *handlers.{{.StorageHandlerName}}, Server *RSServer.RServer) *{{.StorageControllerName}} {
+	ds := {{.StorageControllerName}}{}
+	ds.{{.StorageHandlerName}} = handler
+	ds.Server = Server
+	return &ds
+}
+
+func (controller *{{.StorageControllerName}}) HandleRequest(request Request.ServerRequest) per.IQueryResult {  //.{{.StructDetails.Name}} {
+	data := request.Payload.(models.{{.StructDetails.Name}})
+	
+	if request.Request.Method == "POST" {
+		controller.Server.LogDebug("HandleRequest", "Calling to insert a new {{.StructDetails.Name}}")
+		result := controller.{{.StorageHandlerName}}.Create(data)
+		return result
+
+	} else if request.Request.Method == "PUT" { 
+	
+		controller.Server.LogDebug("HandleRequest", "Calling to update {{.StructDetails.Name}}")
+		result := controller.{{.StorageHandlerName}}.Update(data)
+		return result
+
+	} else if request.Request.Method == "DELETE" { 
+	
+		controller.Server.LogDebug("HandleRequest", "Calling to update the (DELETE) {{.StructDetails.Name}}")
+		result := controller.{{.StorageHandlerName}}.Update(data)
+		return result
+
+	} else {
+		
+		Id := controller.Server.RequestHelper.GetRequestId(request.Request,"{{.StructDetails.Id.Name}}")
+		if Id != nil {
+			controller.Server.LogDebugf("HandleRequest", "Id was not nil and have the following to lookup %d", *Id)
+			result := controller.{{.StorageHandlerName}}.FindById(int64(*Id))
+			return result
+		} else {
+			controller.Server.LogError("HandleRequest", "{{.StructDetails.Id.Name}} was nil")
+		}
+	}
+	
+	controller.Server.LogError("HandleRequest", "Failed returning empty SQLLiteResult")
+	return SQLL.NewEmptyFailedSQLLiteQueryResult()
+}
+
+func (controller *{{.StorageControllerName}}) HandleReadAllRequest(request Request.ServerRequest) per.IQueryResult { 
+	controller.Server.LogDebug("HandleRequest", "Calling to read all {{.StructDetails.Name}}")
+	result := controller.{{.StorageHandlerName}}.ReadAll()
+	return result
+}
+
+
