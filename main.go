@@ -142,7 +142,7 @@ func Parse(dbname string, odir string, tdir string, slog sli.ISimpleLogger) {
 		CreateAndExecute(slog, modelsdir+cs.GetDataName()+".go", DataTemplate, cs)
 	}
 
-	dl := Datats{Database: ctemplates[0].Database, Templates: ctemplates, TargetRepoHost: "github.com", RepoName: "esh0/" + outputdir}
+	dl := Datats{Database: ctemplates[0].Database, Templates: ctemplates, TargetRepoHost: "github.com", RepoName: "eshu0/" + outputdir}
 
 	CreateAndExecute(slog, datastoredir+dl.Database.FilenameTrimmed+".go", DLTemplate, dl)
 	CreateAndExecute(slog, appdir+"main.go", MainTemplate, ctemplates)
