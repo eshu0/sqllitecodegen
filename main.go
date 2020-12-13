@@ -96,15 +96,19 @@ func Parse(dbname string, odir string, tdir string, slog sli.ISimpleLogger) {
 	outputdir := odir + strings.Title(dbfolder)
 	fmt.Println("Outputting to: " + outputdir)
 
-	datastoredir := outputdir + "/Datastore/"
-	handlerdir := outputdir + "/Handlers/"
-	modelsdir := outputdir + "/Models/"
+	pkgdir := outputdir + "/pkg"
+	fmt.Println("Package directory is: " + outputdir)
+
+	datastoredir := pkgdir + "/Datastore/"
+	handlerdir := pkgdir + "/Handlers/"
+	modelsdir := pkgdir + "/Models/"
 	appdir := outputdir + "/TestApp/"
 	restdir := outputdir + "/REST/"
-	controllersdir := restdir + "/Controllers/"
+	controllersdir := restdir + "Controllers/"
 
 	CheckCreatePath(slog, dbname, true)
 	CheckCreatePath(slog, odir, false)
+	CheckCreatePath(slog, pkgdir, false)
 	CheckCreatePath(slog, outputdir, false)
 	CheckCreatePath(slog, datastoredir, false)
 	CheckCreatePath(slog, handlerdir, false)
@@ -140,7 +144,6 @@ func Parse(dbname string, odir string, tdir string, slog sli.ISimpleLogger) {
 	CreateAndExecute(slog, datastoredir+dl.Database.FilenameTrimmed+".go", DLTemplate, dl)
 	CreateAndExecute(slog, appdir+"main.go", MainTemplate, ctemplates)
 	CreateAndExecute(slog, restdir+"main.go", RESTServerTemplate, ctemplates)
-
 }
 
 func CreateTemplate(filepath string, name string) *template.Template {
