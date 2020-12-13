@@ -34,6 +34,8 @@ func main() {
 		return
 	}
 	
+	server.LogInfof("Main", "Error : %s","Failed to load configuration server not started")
+	
 	// add the defaults here
 	RESTCommands.AddDefaults(server)
 	RESTCommands.SetDefaultFunctionalMap(server)
