@@ -1,0 +1,67 @@
+package main
+
+import (
+	"flag"
+
+	ds "github.com/eshu0/Pangu/examples/Autogen/Todos/DataStore"
+	data "github.com/eshu0/Pangu/examples/Autogen/Todos/Models"	
+	Controllers "github.com/eshu0/Pangu/examples/Autogen/Todos/REST/Controllers"	
+	
+	RESTCommands "github.com/eshu0/RESTServer/pkg/commands"
+	RSConfig "github.com/eshu0/RESTServer/pkg/config"
+	RSServer "github.com/eshu0/RESTServer/pkg/server"
+)
+
+func main() {
+
+	dbname := flag.String("db", "./todos.db", "Database defaults to ./todos.db")
+	flag.Parse()
+
+	// create a new server
+	conf := RSConfig.NewRServerConfig()
+
+	// Create a new REST Server
+	server := RSServer.NewRServer(conf)
+
+	// load this first
+	server.ConfigFilePath = "./config.json"
+
+	ok := server.LoadConfig()
+
+	if !ok {
+		server.LogErrorf("Main", "Error : %s","Failed to load configuration server not started")
+		return
+	}
+	
+	// add the defaults here
+	RESTCommands.AddDefaults(server)
+	RESTCommands.SetDefaultFunctionalMap(server)
+
+	fds := ds.CreateDataStorage(*dbname)
+
+	{{range .}}
+
+	{{.StorageHandlerName}} := fds.Get{{.StorageHandlerName}}()
+	{{.StorageControllerName}} := Controllers.New{{.StorageControllerName}}({{.StorageHandlerName}}, server)
+	server.Register("{{.StorageControllerName}}",{{.StorageControllerName}})
+
+	{{end}}
+
+	{{range .}}
+
+	new{{.StructDetails.Name}}  := data.{{.StructDetails.Name}}{}
+	
+	server.AddJSONFunctionHandler("/{{.StructDetails.Name}}/{{"{"}}{{.StructDetails.Id.Name}}{{"}"}}/","HandleRequest","GET","{{.StorageControllerName}}",new{{.StructDetails.Name}})
+	server.AddJSONFunctionHandler("/{{.StructDetails.Name}}/","HandleRequest","","{{.StorageControllerName}}",new{{.StructDetails.Name}})
+	server.AddJSONFunctionHandler("/{{.Table.Name}}/","HandleReadAllRequest","GET","{{.StorageControllerName}}",new{{.StructDetails.Name}})
+
+	{{end}}
+
+
+	// start Listen Server, this build the mapping and creates Handler/
+	// also fires the "http listen and server method"
+	server.ListenAndServe()
+
+}
+
+

@@ -1,0 +1,47 @@
+package pgudatastore
+
+import (
+	SQLL "github.com/eshu0/persist/pkg/sqllite"
+	hndlr "github.com/eshu0/Pangu/examples/Autogen/Todos/Handlers"
+)
+
+type {{.Database.FilenameTrimmed}}Datastore struct {
+	Datastore *SQLL.SQLLiteDatastore
+
+	//{{range .Templates}}
+	//{{.StorageHandlerName}} *{{.StorageHandlerName}}
+	//{{end}}
+}
+
+func CreateDataStorage(filename string) *{{.Database.FilenameTrimmed}}Datastore {
+	res := {{.Database.FilenameTrimmed}}Datastore{}
+
+	ds := SQLL.CreateOpenSQLLiteDatastore(filename)
+	
+	// tests the example
+	ds.SetStorageHander("Generic",SQLL.NewSQLLiteTableHandler(ds)) 
+	{{range .Templates}}
+	ds.SetStorageHander("{{.Table.Name}}",hndlr.New{{.StorageHandlerName}}(ds))
+	{{end}}
+
+
+	ds.CreateStructures()
+
+	res.Datastore = ds
+	
+	return &res
+}
+
+{{range .Templates}}
+func (fds *{{.Database.FilenameTrimmed}}Datastore) Get{{.StorageHandlerName}}() *hndlr.{{.StorageHandlerName}} {
+
+	data, ok := fds.Datastore.GetStorageHandler("{{.Table.Name}}")
+	if ok {
+	  res := data.(*hndlr.{{.StorageHandlerName}})
+	  return res
+	}
+	return nil
+}
+{{end}}
+
+

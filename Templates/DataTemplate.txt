@@ -1,0 +1,45 @@
+package pgumodel
+
+import (
+	"fmt"
+	_ "github.com/mattn/go-sqlite3"
+	per "github.com/eshu0/persist/pkg/interfaces"
+)
+
+//
+// Built from:
+// {{.Database.Name}} - {{.Database.Filename}}
+/*
+ {{.Table.Sql}}
+*/
+//
+
+// Data storage IDataItem
+
+// {{.StructDetails.Comment}} 
+type {{.StructDetails.Name}} struct {
+	per.IDataItem `json:"-"`
+
+{{range .StructDetails.Properties}}
+	// {{.Comment}}
+	{{.Name}} {{.GType}} {{.Json}}
+{{end}}
+}
+
+func (data {{.StructDetails.Name}}) ConvertFromIDataItem(input per.IDataItem) {{.StructDetails.Name}} {
+	  res := input.({{.StructDetails.Name}})
+	  return res
+}
+
+func (data {{.StructDetails.Name}}) Print() string {
+	return fmt.Sprintf(" %s ",data) 
+}
+
+func (data *{{.StructDetails.Name}}) String() string {
+	str := ""
+	{{range .StructDetails.Properties}}
+	// {{.Comment}}
+	str = str + fmt.Sprintf(" %s ",data.{{.Name}}) 
+	{{end}}
+	return str //fmt.Sprintf(" %v, ",data) 
+}

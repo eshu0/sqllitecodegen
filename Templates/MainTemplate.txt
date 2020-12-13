@@ -1,0 +1,117 @@
+package main
+
+import (
+	"flag"
+	"fmt"
+
+	ds "github.com/eshu0/Pangu/examples/Autogen/Todos/DataStore"
+	data "github.com/eshu0/Pangu/examples/Autogen/Todos/Models"
+)
+
+func main() {
+
+	dbname := flag.String("db", "./somedb.db", "Database defaults to ./somedb.db")
+
+	flag.Parse()
+
+	fds := ds.CreateDataStorage(*dbname)
+
+	{{range .}}
+	{{.StorageHandlerName}} := fds.Get{{.StorageHandlerName}}()
+	{{end}}
+
+	fmt.Println("----")
+	fmt.Println("Create")
+	fmt.Println("----")
+	{{range .}}
+	new{{.StructDetails.Name}}  := data.{{.StructDetails.Name}}{}
+	fmt.Println(new{{.StructDetails.Name}})
+
+	ins{{.StructDetails.Name}} := {{.StorageHandlerName}}.Create(new{{.StructDetails.Name}})
+	fmt.Println("----")
+	fmt.Println("Result")
+	fmt.Println("----")
+	fmt.Println(ins{{.StructDetails.Name}})
+
+
+	if ins{{.StructDetails.Name}}.QuerySucceeded() {
+		new{{.StructDetails.Name}}.{{.StructDetails.Id.Name}} = ins{{.StructDetails.Name}}.LastInsertId
+
+		fmt.Println("----")
+		fmt.Printf("Find By Id %d\n", ins{{.StructDetails.Name}}.LastInsertId)
+		fmt.Println("----")
+		fres{{.StorageHandlerName}} := {{.StorageHandlerName}}.FindById(ins{{.StructDetails.Name}}.LastInsertId)
+		for _, res1 := range fres{{.StorageHandlerName}}.Results  {	
+
+			fmt.Println("----")
+			fmt.Println("Update")
+			fmt.Println("----")
+			{{$structname := .StructDetails.Name }}
+			res :=data.{{.StructDetails.Name}}{}
+			res = res.ConvertFromIDataItem(res1)
+			fmt.Println(res)
+			{{range .StructDetails.UpdateProperties}}
+			new{{$structname}}.{{.Name}} = "Updated"
+			{{end}}
+			affected{{$structname}} := {{.StorageHandlerName}}.Update(new{{$structname}})
+			fmt.Println(affected{{$structname}})
+		}
+	}else{
+		fmt.Println("----")
+		fmt.Println("Query not succeeded")
+		fmt.Println("----")
+	}
+	
+	{{end}}
+
+	fmt.Println("----")
+	fmt.Println("Update")
+	fmt.Println("----")
+
+	{{range .}}
+	if  ins{{.StructDetails.Name}}.LastInsertId > 0 {
+		new{{.StructDetails.Name}}.{{.StructDetails.Id.Name}} = ins{{.StructDetails.Name}}.LastInsertId
+
+		{{$structname := .StructDetails.Name }}
+		{{range .StructDetails.UpdateProperties}}
+		new{{$structname}}.{{.Name}} = "Updated"
+		{{end}}
+		affected{{$structname}} := {{.StorageHandlerName}}.Update(new{{$structname}})
+		fmt.Println(affected{{$structname}})
+	} else {
+
+	}
+	{{end}}
+
+	fmt.Println("----")
+	fmt.Println("Get All")
+	fmt.Println("----")
+
+	{{range .}}
+	res{{.StorageHandlerName}} := {{.StorageHandlerName}}.ReadAll()
+	for _, res := range res{{.StorageHandlerName}}.Results {	
+		fmt.Println(res)
+	}
+	{{end}}
+/*
+	fmt.Println("----")
+	fmt.Println("Clear All")
+	fmt.Println("----")
+
+	{{range .}}
+	{{.StorageHandlerName}}rowsaffected := {{.StorageHandlerName}}.Wipe()
+	fmt.Println({{.StorageHandlerName}}rowsaffected.RowsAffected)
+	{{end}}
+*/
+	fmt.Println("----")
+	fmt.Println("Get All")
+	fmt.Println("----")
+
+	{{range .}}
+	res{{.StorageHandlerName}} = {{.StorageHandlerName}}.ReadAll()
+	for _, res := range res{{.StorageHandlerName}}.Results {	
+		fmt.Println(res)
+	}
+	{{end}}
+	
+}
