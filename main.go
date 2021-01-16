@@ -12,7 +12,7 @@ import (
 func main() {
 
 	dbname := flag.String("db", "", "Database defaults to searching the current working directoyr for .db files")
-	outdir := flag.String("out", "", "output is ../Autogen/<Database>")
+	outdir := flag.String("out", "", "output is ./Autogen/<Database>")
 	tdir := flag.String("tdir", "", "Template directory is ./template/")
 
 	flag.Parse()
