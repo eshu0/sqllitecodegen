@@ -26,20 +26,7 @@ type {{.StructDetails.Name}} struct {
 {{end}}
 }
 
-func (data {{.StructDetails.Name}}) ConvertFromIDataItem(input per.IDataItem) {{.StructDetails.Name}} {
-	  res := input.({{.StructDetails.Name}})
-	  return res
-}
-
-func (data {{.StructDetails.Name}}) Print() string {
-	return fmt.Sprintf(" %s ",data) 
-}
-
-func (data *{{.StructDetails.Name}}) String() string {
-	str := ""
-	{{range .StructDetails.Properties}}
-	// {{.Comment}}
-	str = str + fmt.Sprintf(" %s ",data.{{.Name}}) 
-	{{end}}
-	return str //fmt.Sprintf(" %v, ",data) 
-}
+// Functions
+{{range .StructDetails.Functions}}
+{{.Data}} 
+{{end}}
